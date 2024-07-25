@@ -1,7 +1,7 @@
 Here is a step-by-step summary of the code:
 #### 1.  Import Libraries
 - **Libraries:** Import necessary libraries including PyTorch, torchvision, einops, and other utility libraries such as matplotlib and pandas.
-```
+```ruby
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
