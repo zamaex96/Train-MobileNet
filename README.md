@@ -21,7 +21,7 @@ os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
 ```
 #### 3. Configure Model and Dataset Paths
 - Define the root directory for the dataset and the model name. Specify the number of classes and instantiate the model.
-
+```ruby
 dataset_root = r"C:\dataset"
 model_name = "mobilenetv2_100"
 no_classes = 11
@@ -29,20 +29,20 @@ model = ImageClassifier(no_classes, model_name)
 
 #### 4. Set Training Parameters
 - Define training parameters such as image size, number of epochs, and batch size.
-
+```ruby
 image_size = 224
 num_epochs = 100
 batch_size = 4
 
 #### 5. Set Up Optimizer and Loss Function
 - Configure the optimizer and the loss function for training.
-
+```ruby
 optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
 criterion = nn.CrossEntropyLoss()
 
 #### 6. Define Data Transformations
 - Define transformations to be applied to the images such as resizing, tensor conversion, and normalization.
-
+```ruby
 transform = transforms.Compose([
     transforms.Resize((image_size, image_size)),
     transforms.ToTensor(),
@@ -51,7 +51,7 @@ transform = transforms.Compose([
 
 #### 7. Create Datasets and DataLoaders
 - Create datasets and dataloaders for training, validation, and testing.
-
+```ruby
 train_dataset = ImageFolder(root=dataset_root + "/train", transform=transform)
 validation_dataset = ImageFolder(root=dataset_root + "/test", transform=transform)
 
@@ -61,10 +61,10 @@ test_dataloader = DataLoader(validation_dataset, batch_size=4, shuffle=False)
 
 #### 8. Train the Model
 - Train the model for a specified number of epochs, compute training and validation loss, and save the model every 10 epochs.
-
+```ruby
 training_loss_arr = []
 validation_loss_arr = []
-
+```ruby
 for epoch in range(num_epochs):
     model.train()
     total_loss = 0.0
@@ -95,7 +95,7 @@ for epoch in range(num_epochs):
         
 #### 9. Validate the Model
 - Validate the model after every 10 epochs and calculate the accuracy.
-
+```ruby
         total_correct = 0
         total_samples = 0
 
@@ -111,13 +111,13 @@ for epoch in range(num_epochs):
   
 #### 10. Save Training and Validation Loss
 - Save the training and validation loss to a CSV file.
-
+```ruby
 df = pd.DataFrame({'train_loss': training_loss_arr, 'val_loss': validation_loss_arr})
 df.to_csv('C:/trainandvallossagain.csv', index=False)
 
 #### 11. Plot Loss Curves
 - Plot the training and validation loss curves and save the plot as an EPS file.
-
+```ruby
 plt.figure(figsize=(8, 4), dpi=300)
 plt.plot(training_loss_arr, label="Training Loss")
 plt.plot(validation_loss_arr, label="Validation Loss")
@@ -130,6 +130,6 @@ plt.show()
 
 #### 12. Save the Trained Model
 - Save the final trained model's state dictionary.
-
+```ruby
 torch.save(model.state_dict(), "vit_model.pth")
 print("Model saved successfully.")
