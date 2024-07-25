@@ -15,7 +15,7 @@ os.environ['KMP_DUPLICATE_LIB_OK']='True'
 import torch
 # model_name = "mobilenetv2_100" # resnext50_32x4d resnet18 mobilenetv2_100 tf_efficientnet_b0
 
-dataset_root  = r"C:\Users\USPLa\OneDrive\Desktop\dataset"
+dataset_root  = r"C:\dataset"
 model_name = "mobilenetv2_100"
 no_classes = 11
 # model = ImageClassifier(no_classes, model_name).cuda()
