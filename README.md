@@ -14,3 +14,8 @@ import os
 import pandas as pd
 from models.models.create_models import ImageClassifier
 ```
+#### 2. Set Environment Variables
+- Set environment variables to avoid certain errors.
+```ruby
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'True'
+```
