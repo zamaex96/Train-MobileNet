@@ -134,7 +134,7 @@ print(training_loss_arr)
 print(validation_loss_arr)
 
 df = pd.DataFrame({'train_loss':training_loss_arr, 'val_loss':validation_loss_arr})
-df.to_csv('C:/Users/USPLa/OneDrive/Desktop/Conference list/trainandvallossagain.csv', index = False)
+df.to_csv('C:trainandvallossagain.csv', index = False)
 
 # Plot loss curves
 plt.figure(figsize=(8, 4), dpi=300)  # Create a figure with the specified size and resolution
