@@ -1,3 +1,41 @@
+**MobileNet** is a family of deep learning models designed specifically for efficient execution on mobile and embedded devices. The primary goal of MobileNet architectures is to achieve a balance between model size, computational complexity, and accuracy, making them well-suited for applications where computational resources and power consumption are limited.
+
+### Key Features of MobileNet:
+
+#### Depthwise Separable Convolutions:
+
+The primary innovation in MobileNet is the use of depthwise separable convolutions, which reduce the computational cost and model size significantly.
+
+- A standard convolution operation is divided into two parts:
+  - **Depthwise Convolution:** Applies a single convolutional filter per input channel.
+  - **Pointwise Convolution:** Uses a 1x1 convolution to combine the outputs of the depthwise convolution.
+
+#### Model Variants:
+
+- **MobileNetV1:** Introduced the concept of depthwise separable convolutions, resulting in significant reductions in the number of parameters and computational cost compared to traditional convolutional networks.
+- **MobileNetV2:** Improved upon V1 by introducing inverted residuals and linear bottlenecks, enhancing both efficiency and performance.
+- **MobileNetV3:** Further optimized using a combination of platform-aware neural architecture search (NAS) and a novel network structure, balancing accuracy and efficiency even more effectively.
+
+#### Width Multiplier:
+
+MobileNet models include a width multiplier parameter (α), which scales the number of channels in each layer, allowing for the adjustment of the model size and computational cost.
+
+- α values range from 0 to 1, where lower values reduce the model size and computational load.
+
+#### Resolution Multiplier:
+
+MobileNet allows the input image resolution to be reduced, further decreasing the computational complexity.
+
+#### Applications:
+
+MobileNets are widely used in mobile and embedded vision applications, such as image classification, object detection, and face recognition, due to their efficient architecture.
+
+### Summary:
+
+MobileNet models are highly efficient convolutional neural networks optimized for mobile and embedded devices. They achieve significant reductions in model size and computational complexity through the use of depthwise separable convolutions, making them ideal for resource-constrained environments. Various versions of MobileNet (V1, V2, V3) offer different levels of optimization, allowing users to select the appropriate balance of efficiency and performance for their specific application.
+
+This code is a script for training an image classification model MobileNet using PyTorch. The code is structured to facilitate easy training, evaluation, and monitoring of a deep learning model for image classification. It allows for periodic saving of the model's state and provides insights into the model's performance through loss curves and accuracy metrics.
+
 Here is a step-by-step summary of the code:
 #### 1.  Import Libraries
 - **Libraries:** Import necessary libraries including PyTorch, torchvision, einops, and other utility libraries such as matplotlib and pandas.
