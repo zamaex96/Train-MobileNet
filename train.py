@@ -27,7 +27,7 @@ class ImageClassifier(nn.Module):
     def __init__(self, num_classes, model_name):
         super(ImageClassifier, self).__init__()
         if model_name == "mobilenetv2_100":
-            self.model = models.mobilenet_v2(weight=True)
+            self.model = models.mobilenet_v2(weights=True)
             self.model.classifier[1] = nn.Linear(self.model.last_channel, num_classes)
 
     def forward(self, x):
