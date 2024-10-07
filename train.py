@@ -1,155 +1,155 @@
 import torch
 import torch.nn as nn
-import torch.nn.functional as F
-import matplotlib.pyplot as plt
-from einops.layers.torch import Rearrange
-import torch
-from torchvision import transforms
-from torch.utils.data import Dataset, DataLoader
+import torch.optim as optim
+from torchvision import transforms, models
+from torch.utils.data import DataLoader
 from torchvision.datasets import ImageFolder
 import matplotlib.pyplot as plt
-from models.models.create_models import ImageClassifier
 import os
 import pandas as pd
-os.environ['KMP_DUPLICATE_LIB_OK']='True'
-import torch
-# model_name = "mobilenetv2_100" # resnext50_32x4d resnet18 mobilenetv2_100 tf_efficientnet_b0
 
-dataset_root  = r"C:\dataset"
+os.environ['KMP_DUPLICATE_LIB_OK']='True'
+
+# Dataset path and model configuration
+dataset_root  = r"C:\Users\BU\Documents\BULabProjects\LSTM\DatasetSpec\SplitData"
 model_name = "mobilenetv2_100"
-no_classes = 11
-# model = ImageClassifier(no_classes, model_name).cuda()
-model = ImageClassifier(no_classes, model_name)
+no_classes = 5
+image_size = 224
+num_epochs = 200
+batch_size = 4
+learning_rate = 0.001
+
+# Device configuration
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+# Model Definition
+class ImageClassifier(nn.Module):
+    def __init__(self, num_classes, model_name):
+        super(ImageClassifier, self).__init__()
+        if model_name == "mobilenetv2_100":
+            self.model = models.mobilenet_v2(pretrained=True)
+            self.model.classifier[1] = nn.Linear(self.model.last_channel, num_classes)
+
+    def forward(self, x):
+        return self.model(x)
 
 # Instantiate the model
-image_size = 224
+model = ImageClassifier(no_classes, model_name).to(device)
 
-num_epochs = 100
-batch_size = 4
-# model = model.cuda()
-model = model
-# print(model)
-# model = ViT(image_size, patch_size, stride, num_classes, dim, depth, num_heads, local_context_size)
-
-# Training code
-optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
+# Define optimizer and loss function
+optimizer = optim.Adam(model.parameters(), lr=learning_rate)
 criterion = nn.CrossEntropyLoss()
 
-
+# Define transforms
 transform = transforms.Compose([
-    transforms.Resize((image_size, image_size)),  # Resize the images to a specific size
-    transforms.ToTensor(),  # Convert the images to tensors
-    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])  # Normalize the images
+    transforms.Resize((image_size, image_size)),
+    transforms.ToTensor(),
+    transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
 ])
 
-# Define the path to the root folder of the dataset
+# Load datasets
+train_dataset = ImageFolder(root=os.path.join(dataset_root, "train"), transform=transform)
+validation_dataset = ImageFolder(root=os.path.join(dataset_root, "test"), transform=transform)
 
-
-# Create an instance of the ImageFolder dataset for the training data
-train_dataset = ImageFolder(root=dataset_root + "/train", transform=transform)
-
-# Create an instance of the ImageFolder dataset for the validation data
-validation_dataset = ImageFolder(root=dataset_root + "/test", transform=transform)
-
-# Set batch size for dataloaders
-
-
-# Create dataloaders
+# Dataloaders
 train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 validation_dataloader = DataLoader(validation_dataset, batch_size=batch_size, shuffle=True)
-test_dataloader = DataLoader(validation_dataset, batch_size=4, shuffle=False)
-# criterion = criterion.cuda()
-criterion = criterion
 
+# Training and Validation
 training_loss_arr = []
 validation_loss_arr = []
+training_acc_arr = []
+validation_acc_arr = []
 
-# Assuming you have a dataloader for your dataset
 for epoch in range(num_epochs):
+    # Training loop
     model.train()
-    total_loss = 0.0
+    total_train_loss = 0.0
+    total_train_correct = 0
+    total_train_samples = 0
+    
     for images, labels in train_dataloader:
+        images, labels = images.to(device), labels.to(device)
+
         optimizer.zero_grad()
-        # images = images.cuda()
-        # labels = labels.cuda()
-        images = images
-        labels = labels
-
-        # Forward pass
         outputs = model(images)
-
-        # Compute loss
         loss = criterion(outputs, labels)
-
-        # Backward pass and optimization
         loss.backward()
         optimizer.step()
-        total_loss += loss.item()
-    avg_train_loss = total_loss / len(train_dataloader)
+
+        total_train_loss += loss.item()
+
+        # Calculate accuracy
+        _, predicted = torch.max(outputs.data, 1)
+        total_train_correct += (predicted == labels).sum().item()
+        total_train_samples += labels.size(0)
+
+    avg_train_loss = total_train_loss / len(train_dataloader)
     training_loss_arr.append(avg_train_loss)
-    # Validation
+    
+    train_accuracy = total_train_correct / total_train_samples * 100
+    training_acc_arr.append(train_accuracy)
+
+    # Validation loop
     model.eval()
     total_val_loss = 0.0
-    for images, labels in validation_dataloader:
-        with torch.no_grad():
-            # images = images.cuda()
-            # labels = labels.cuda()
+    total_val_correct = 0
+    total_val_samples = 0
 
-            images = images
-            labels = labels
+    with torch.no_grad():
+        for images, labels in validation_dataloader:
+            images, labels = images.to(device), labels.to(device)
             outputs = model(images)
             val_loss = criterion(outputs, labels)
             total_val_loss += val_loss.item()
+
+            # Calculate accuracy
+            _, predicted = torch.max(outputs.data, 1)
+            total_val_correct += (predicted == labels).sum().item()
+            total_val_samples += labels.size(0)
+
     avg_val_loss = total_val_loss / len(validation_dataloader)
     validation_loss_arr.append(avg_val_loss)
-    # Print the average loss for the epoch
-    print(f"Epoch {epoch + 1}: Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}")
 
-         # Print loss for monitoring training progress
-        # print("Epoch [{}/{}], Loss: {:.4f}".format(epoch + 1, num_epochs, loss.item()))
+    val_accuracy = total_val_correct / total_val_samples * 100
+    validation_acc_arr.append(val_accuracy)
+
+    print(f"Epoch {epoch+1}/{num_epochs}, Train Loss: {avg_train_loss:.4f}, Val Loss: {avg_val_loss:.4f}, Train Acc: {train_accuracy:.2f}%, Val Acc: {val_accuracy:.2f}%")
 
     if (epoch + 1) % 10 == 0:
-        torch.save(model.state_dict(), "{}_{}.pth".format(model_name, epoch))
-        print("Model saved successfully.")
-        # Validation code
-        model.eval()
-        total_correct = 0
-        total_samples = 0
+        torch.save(model.state_dict(), f"{model_name}_epoch{epoch+1}.pth")
+        print(f"Model saved at epoch {epoch+1}.")
 
-        with torch.no_grad():
-            for images, labels in test_dataloader:
-                # images = images.cuda()
-                # labels = labels.cuda()
-                images = images
-                labels = labels
-                outputs = model(images)
-                _, predicted = torch.max(outputs.data, 1)
-                total_samples += labels.size(0)
-                total_correct += (predicted == labels).sum().item()
+# Save the final model
+torch.save(model.state_dict(), f"{model_name}_final.pth")
+print(f"Final model saved as {model_name}_final.pth.")
 
-        accuracy = 100 * total_correct / total_samples
-        print("Validation Accuracy: {:.2f}%".format(accuracy))
+# Save loss and accuracy data to CSV
+df = pd.DataFrame({'train_loss': training_loss_arr, 'val_loss': validation_loss_arr,
+                   'train_acc': training_acc_arr, 'val_acc': validation_acc_arr})
+df.to_csv('train_val_loss_acc.csv', index=False)
 
-print(training_loss_arr)
-print(validation_loss_arr)
-
-df = pd.DataFrame({'train_loss':training_loss_arr, 'val_loss':validation_loss_arr})
-df.to_csv('C:trainandvallossagain.csv', index = False)
+# Plot loss and accuracy curves
+plt.figure(figsize=(12, 6), dpi=300)
 
 # Plot loss curves
-plt.figure(figsize=(8, 4), dpi=300)  # Create a figure with the specified size and resolution
-plt.plot(training_loss_arr, label="Training Loss")
-plt.plot(validation_loss_arr, label="Validation Loss")
+plt.subplot(1, 2, 1)
+plt.plot(training_loss_arr, label="Training Loss", color='b')
+plt.plot(validation_loss_arr, label="Validation Loss", color='r')
 plt.xlabel('Epoch', fontsize=12, fontweight='bold')
 plt.ylabel('Loss Value', fontsize=12, fontweight='bold')
-plt.title('Loss curve', fontsize=14, fontweight='bold')
+plt.title('Loss Curve', fontsize=14, fontweight='bold')
 plt.legend()
 
-# Save the plot as an EPS file
-plt.savefig('Loss Curve.eps', format='eps', bbox_inches='tight')
+# Plot accuracy curves
+plt.subplot(1, 2, 2)
+plt.plot(training_acc_arr, label="Training Accuracy", color='b')
+plt.plot(validation_acc_arr, label="Validation Accuracy", color='r')
+plt.xlabel('Epoch', fontsize=12, fontweight='bold')
+plt.ylabel('Accuracy (%)', fontsize=12, fontweight='bold')
+plt.title('Accuracy Curve', fontsize=14, fontweight='bold')
+plt.legend()
+
+# Save the plots
+plt.savefig('loss_acc_curve.eps', format='eps', bbox_inches='tight')
 plt.show()
-
-
-# Save the trained model
-torch.save(model.state_dict(), "vit_model.pth")
-print("Model saved successfully.")
