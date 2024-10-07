@@ -11,7 +11,7 @@ import pandas as pd
 os.environ['KMP_DUPLICATE_LIB_OK']='True'
 
 # Dataset path and model configuration
-dataset_root  = r"C:\Users\BU\Documents\BULabProjects\LSTM\DatasetSpec\SplitData"
+dataset_root  = r"Data"
 model_name = "mobilenetv2_100"
 no_classes = 5
 image_size = 224
