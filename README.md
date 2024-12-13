@@ -177,6 +177,85 @@ print("Model saved successfully.")
 ### Purpose of the Script
 This script is designed to process time series data from CSV files and generate Continuous Wavelet Transform (CWT) spectrograms for each column in the data. It's typically used for signal analysis, particularly in scenarios involving time-frequency representation of signals.
 
+Let me provide a deeper explanation of the Continuous Wavelet Transform (CWT) and its significance in signal processing.
+
+### Continuous Wavelet Transform (CWT) - Detailed Explanation
+
+#### What is a Wavelet Transform?
+A wavelet transform is a technique for analyzing signals by breaking them down into wavelets (small wave-like oscillations). Unlike Fourier transforms that use sine waves of fixed length, wavelets can adapt their length to examine different parts of a signal.
+
+#### Key Characteristics of CWT
+1. **Time-Frequency Representation**
+   - Provides a way to analyze how a signal's frequency content changes over time
+   - Ideal for non-stationary signals that have changing characteristics
+
+2. **Wavelet Types**
+   - In this script, a Morlet wavelet is used (specified by `wavelet=mother`)
+   - Morlet wavelet is particularly good for:
+     - Analyzing oscillatory signals
+     - Providing good time and frequency localization
+     - Resembling sine waves with a Gaussian envelope
+
+#### Mathematical Concept
+The CWT is mathematically defined as:
+```
+W(a,b) = ∫ f(t) * ψ*((t-b)/a) dt
+```
+Where:
+- `f(t)` is the original signal
+- `ψ` is the wavelet function
+- `a` is the scale (related to frequency)
+- `b` is the translation (time location)
+
+#### Practical Implementation in the Script
+```python
+mother = wavelet.Morlet(6)
+wave, scales, freqs, coi, fft, fftfreqs = wavelet.cwt(y, 1 / sampling_rate, wavelet=mother)
+```
+Breaking down the parameters:
+- `y`: Input signal
+- `1 / sampling_rate`: Time resolution
+- `wavelet=mother`: Specifies the wavelet type (Morlet)
+
+#### Spectrogram Generation
+```python
+plt.imshow(np.abs(wave), extent=[x[0], x[-1], freqs[-1], freqs[0]], cmap='jet', aspect='auto')
+```
+This line creates a visual representation where:
+- X-axis: Time
+- Y-axis: Frequency
+- Color intensity: Wavelet coefficient magnitude
+- `cmap='jet'`: Color scheme (blue to red)
+
+### Practical Applications
+1. **Biomedical Signals**
+   - EEG/ECG analysis
+   - Detecting abnormal patterns
+
+2. **Geophysics**
+   - Seismic signal processing
+   - Earthquake data analysis
+
+3. **Audio Processing**
+   - Music analysis
+   - Sound event detection
+
+4. **Mechanical Engineering**
+   - Fault detection in machinery
+   - Vibration analysis
+
+### Advantages Over Traditional Fourier Transform
+- Better time localization
+- Can detect transient events
+- Handles non-stationary signals more effectively
+- Provides multi-resolution analysis
+
+### Potential Improvements for This Script
+1. Add more wavelet options
+2. Implement dynamic scaling
+3. Add signal preprocessing
+4. Create more comprehensive visualization options
+
 ### Detailed Script Breakdown
 
 #### 1. Import Statements
