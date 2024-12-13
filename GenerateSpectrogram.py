@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 import pycwt as wavelet
 
 # Base paths
-base_csv_path = r"C:\BULabAssets\BULabProjects\BiomaterialData\dataset\Alginate\Cropped\CSVs\Seperate"
-base_output_path = r"C:\BULabAssets\BULabProjects\BiomaterialData\dataset\Alginate\Spectrogram\5pix"
+base_csv_path = r"C:\CSVs\Seperate"
+base_output_path = r"C:\Spectrogram\5pix"
 
 # List of classes from C1 to C9
 classes = [f"C{i}" for i in range(1, 10)]
