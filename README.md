@@ -172,6 +172,100 @@ plt.show()
 torch.save(model.state_dict(), "vit_model.pth")
 print("Model saved successfully.")
 ```
+# Generate Continuous Wavelet Transform (CWT) spectrograms
+
+### Purpose of the Script
+This script is designed to process time series data from CSV files and generate Continuous Wavelet Transform (CWT) spectrograms for each column in the data. It's typically used for signal analysis, particularly in scenarios involving time-frequency representation of signals.
+
+### Detailed Script Breakdown
+
+#### 1. Import Statements
+```python
+import os           # For file and directory operations
+import numpy as np  # For numerical computations
+import pandas as pd # For data manipulation
+import matplotlib.pyplot as plt  # For plotting
+import pycwt as wavelet  # Wavelet transformation library
+```
+These libraries are imported to handle various tasks:
+- `os`: Managing file paths and directories
+- `numpy`: Numerical computations
+- `pandas`: Reading and processing CSV data
+- `matplotlib`: Creating and saving plots
+- `pycwt`: Performing Continuous Wavelet Transform
+
+#### 2. Path Configuration
+```python
+base_csv_path = r"C:\CSVs\Seperate"     # Directory containing input CSV files
+base_output_path = r"C:\Spectrogram\5pix"  # Directory to save output spectrograms
+```
+Sets up base directories for input CSV files and output spectrogram images.
+
+#### 3. Class Generation
+```python
+classes = [f"C{i}" for i in range(1, 10)]
+```
+Creates a list of classes from C1 to C9, which will be used to process corresponding CSV files.
+
+#### 4. CWT Spectrogram Processing Function
+```python
+def process_cwt_spectrogram(data, output_folder, sampling_rate=10048):
+```
+This function does the core processing:
+- Removes the first column of the input data
+- Iterates through each column in the DataFrame
+- Performs Continuous Wavelet Transform
+- Generates and saves a spectrogram for each column
+
+Key steps within the function:
+- Extract signal values from each column
+- Generate time axis based on sampling rate
+- Use Morlet wavelet for transformation
+- Create a spectrogram image using `plt.imshow()`
+- Save the image with specific formatting (5 DPI, tight layout, no borders)
+
+#### 5. Main Processing Loop
+```python
+for class_name in classes:
+```
+The main processing loop:
+- Constructs full paths for input CSV and output folder
+- Creates output directory if it doesn't exist
+- Attempts to:
+  1. Read the CSV file
+  2. Process the data using `process_cwt_spectrogram()`
+  3. Print processing status
+- Handles potential errors like missing files
+
+### Workflow
+1. Script starts by defining input and output paths
+2. Generates a list of classes (C1 to C9)
+3. For each class:
+   - Finds corresponding CSV file
+   - Creates an output folder
+   - Reads the CSV
+   - Generates CWT spectrograms for each column
+   - Saves spectrograms as PNG images
+
+### Technical Details
+- Uses Continuous Wavelet Transform for time-frequency analysis
+- Morlet wavelet used for transformation
+- Spectrograms saved at very low resolution (5 DPI)
+- Handles potential file not found or processing errors
+
+### Potential Use Cases
+- Signal processing
+- Time series analysis
+- Feature extraction for machine learning
+- Visualizing frequency components of signals
+
+### Recommendations for Improvement
+1. Add more error handling
+2. Make sampling rate configurable
+3. Add logging instead of print statements
+4. Parameterize wavelet type and parameters
+
+
 
 <div align="center">
   <a href="https://maazsalman.org/">
